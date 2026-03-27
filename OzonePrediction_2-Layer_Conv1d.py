@@ -29,12 +29,11 @@ tf.config.optimizer.set_jit(True)
 from keras import backend as K
 from keras.callbacks import ReduceLROnPlateau
 from keras.models import Model, load_model
-from keras.layers import Input, Dense, Conv1D, Reshape, Embedding, Flatten, Bidirectional, CuDNNGRU, GRU, CuDNNLSTM, LSTM, GlobalMaxPooling1D, BatchNormalization, MaxPooling1D
-from keras.layers.core import Dropout
+from keras.layers import Input, Dense, Conv1D, Reshape, Flatten, BatchNormalization, MaxPooling1D, Activation, Dropout
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.callbacks import TensorBoard, CSVLogger
 
-sampleDataset = pd.read_csv(r'\PathToTheSampleDataset\2020-Northwest_China_Ozone_data.csv', index_col=0)
+sampleDataset = pd.read_csv(r'sample_dataset\2020-Northwest_China_Ozone_data.csv', index_col=0)
 
 pm_data = sampleDataset[['O3', 'year',  'doy', 'dem1', 'dem2', 'dem3', 'dem4', 'dem5',
        'dem6','dem7', 'dem8', 'dem9', 'dem91', 'lu1', 'lu2', 'lu3', 'lu4', 'lu5',
@@ -55,11 +54,8 @@ Obtain 4.45 million data samples. Remove negative numbers and perform normalizat
 pm_data = pm_data.drop(pm_data[(pm_data['O3']>300)].index, axis=0) # Delete the abnormal value contained in the label which is ('O3'>300)
 
 # Partition the data
-# We use the data from 2020 as the test set. 
-# The data from 2016-2019 as the training and validation sets.
-train_set = pm_data.drop(pm_data[(pm_data['year']>=2020)].index, axis=0)
-
-test_set = pm_data.drop(pm_data[(pm_data['year']<2020)].index, axis=0)
+# Using a standard 80/20 split since the sample data only contains 2020 data
+train_set, test_set = train_test_split(pm_data, test_size=0.20, random_state=42)
 
 
 # Normalization
@@ -133,22 +129,19 @@ Neural_model.summary()
 callbacks_list_new = [
     ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=6, mode='auto', min_lr=0, verbose=1),
     ModelCheckpoint(filepath='./result' + os.sep + Neural_model.name + '_' + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') +
-                             '_{epoch:02d}_{val_mae:.3f}_{val_loss:.3f}' + '.h5',
+                             '_{epoch:02d}_{val_mae:.3f}_{val_loss:.3f}' + '.keras',
                     monitor='val_loss',
                     verbose=1,
                     save_best_only= True,
-                    period=1),
+                    save_freq='epoch'),
     EarlyStopping(monitor= 'val_loss',
                   patience=20,
                   verbose=1,
                   mode="auto"),
     TensorBoard(log_dir='logs/',
-                batch_size=BATCH_SIZE,
                 write_graph=True,
-                write_grads=True,
                 write_images=True,
                 embeddings_freq=0,
-                embeddings_layer_names=None,
                 embeddings_metadata=None),
     CSVLogger('logs/' + os.sep + 'test_model' + datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '.log')]
 

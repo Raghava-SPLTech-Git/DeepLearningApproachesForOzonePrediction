@@ -22,7 +22,7 @@ import lightgbm as lgb
 
 print("Load the data...")
 
-sampleDataset = pd.read_csv(r'\PathToTheSampleDataset\2020-Northwest_China_Ozone_data.csv', index_col=0)
+sampleDataset = pd.read_csv(r'sample_dataset\2020-Northwest_China_Ozone_data.csv', index_col=0)
 
 # Predicting O3
 pm_data=sampleDataset[['O3', 'year',  'doy', 'dem1', 'dem2', 'dem3', 'dem4', 'dem5',

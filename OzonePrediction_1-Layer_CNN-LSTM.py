@@ -29,12 +29,12 @@ tf.config.optimizer.set_jit(True)
 from keras import backend as K
 from keras.callbacks import ReduceLROnPlateau
 from keras.models import Model, load_model
-from keras.layers import Input, Dense, Conv1D, Reshape, Embedding, Flatten, Bidirectional, CuDNNGRU, GRU, CuDNNLSTM, LSTM, GlobalMaxPooling1D, BatchNormalization, MaxPooling1D
+from keras.layers import Input, Dense, Conv1D, Reshape, Embedding, Flatten, Bidirectional,  GRU, LSTM, GlobalMaxPooling1D, BatchNormalization, MaxPooling1D
 from keras.layers.core import Dropout
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.callbacks import TensorBoard, CSVLogger
 
-sampleDataset = pd.read_csv(r'\PathToTheSampleDataset\2020-Northwest_China_Ozone_data.csv', index_col=0)
+sampleDataset = pd.read_csv(r'sample_dataset\2020-Northwest_China_Ozone_data.csv', index_col=0)
 
 pm_data = sampleDataset[['O3', 'year',  'doy', 'dem1', 'dem2', 'dem3', 'dem4', 'dem5',
        'dem6','dem7', 'dem8', 'dem9', 'dem91', 'lu1', 'lu2', 'lu3', 'lu4', 'lu5',
